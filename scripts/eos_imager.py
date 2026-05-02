@@ -25,10 +25,17 @@ def eos_imager(client, colour):
                 return []
 
     def retrieve_image_info(response):
-
-        # Component pull
-        component = client.get("getComponent", json={"component": response,
-                                                     "alternativeIdentifier": False})
+            
+        def pull_data(boole):
+            # Component pull from production database
+            data = client.get("getComponent", json={"component": response,
+                                                     "alternativeIdentifier": boole})
+            return data
+        
+        if "LIV" or "OX" "GLA" in response:
+            component = pull_data(True)
+        else:
+            component = pull_data(False)
 
         def get_stage(serial):
             # Retrieve component current stage
