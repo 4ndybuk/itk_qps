@@ -32,7 +32,7 @@ def eos_imager(client, colour):
                                                      "alternativeIdentifier": boole})
             return data
         
-        if "LIV" or "OX" "GLA" in response:
+        if any(x in response for x in ["LIV", "OX", "GLA"]):
             component = pull_data(True)
         else:
             component = pull_data(False)
