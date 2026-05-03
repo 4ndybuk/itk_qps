@@ -21,9 +21,6 @@ if DEBUG == False:
     print(f"{colour("••• ATLAS ITk PRODUCTION DATABASE LOGIN •••", Fore.LIGHTBLUE_EX)}")
     code1 = getpass.getpass("Enter passcode 1: ")
     code2 = getpass.getpass("Enter passcode 2: ")
-else:
-    code1 = "fokgoh-miXdyq"
-    code2 = "bysfe6-xebcub"
 
 try:
     u = itkdb.core.User(access_code1=code1, access_code2=code2)
@@ -38,22 +35,22 @@ def welcome():
     # Welcome Page
     print(f"""
             ╭──────────────────────────────────────────────────────────────╮
-            │ {colour("Welcome to ITk Quick Production Services", Fore.GREEN):<60}          │
+            │  💠💠💠💠 {colour("Welcome to ITk Quick Production Services", Fore.CYAN):<10} 💠💠💠💠  │
             │                                                              │
             │ {colour("Choose your service:", Fore.CYAN):<60}          │
             │                                                              │
-            │ A → Set alternative IDs for the components (.csv required)   │
-            │ B → Fetch and output specific batch components               │
-            │ C → Upload component masses in a batch (.csv required)       │
-            │ D → Search pixel module components by tool IDs               │
-            │ E → Upload component VI in a batch (.csv required)           │
-            │ F → Search component stored images status                    │
+            │ •A → Set alternative IDs for the components (.csv required)  │
+            │ •B → Fetch and output specific batch components              │
+            │ •C → Upload component masses in a batch (.csv required)      │
+            │ •D → Search pixel module components by tool IDs              │
+            │ •E → Upload component VI in a batch (.csv required)          │
+            │ •F → Search component stored images status                   │
             │                                                              │
             │ {colour("exit", Fore.LIGHTRED_EX)} → Quit the program{"":<34}    │
             │                                                              │
             ╰──────────────────────────────────────────────────────────────╯
             """)
-    choose_input = input("Choice: ")
+    choose_input = input("•Choice: ")
     if choose_input != "exit":
         return choose_input.strip().upper()
     else:
