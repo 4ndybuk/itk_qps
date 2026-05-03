@@ -11,7 +11,7 @@ from scripts.filter_jigs import filter_jigs
 from scripts.visual_inspections import visual_inspections
 from scripts.eos_imager import eos_imager
 
-DEBUG = True
+DEBUG = False
 
 def colour(text, c):
     # Text colouring function
