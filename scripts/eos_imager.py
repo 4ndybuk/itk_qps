@@ -1,6 +1,9 @@
 import os
 from colorama import Fore
 import csv
+from halo import Halo
+import platform
+import subprocess
 
 def eos_imager(client, colour):
     # Retrieve information about images per visual inspection
@@ -25,17 +28,24 @@ def eos_imager(client, colour):
                 return []
 
     def retrieve_image_info(response):
-            
+        loading = Halo(text="••• Searching the component, please wait •••", spinner='earth')
+        loading.start()
+
         def pull_data(boole):
             # Component pull from production database
             data = client.get("getComponent", json={"component": response,
-                                                     "alternativeIdentifier": boole})
+                                                    "alternativeIdentifier": boole})
             return data
         
-        if any(x in response for x in ["LIV", "OX", "GLA"]):
-            component = pull_data(True)
-        else:
-            component = pull_data(False)
+        try:
+            if any(x in response for x in ["LIV", "OX", "GLA"]):
+                component = pull_data(True)
+            else:
+                component = pull_data(False)
+        except Exception as e:
+            print(f"\n\t{colour("••• ERROR: Component retrieval error, displaying: •••", Fore.RED)}")
+            print(f"\n{e}")
+            loading.stop()
 
         def get_stage(serial):
             # Retrieve component current stage
@@ -116,6 +126,17 @@ def eos_imager(client, colour):
 
             {colour("---------------------------------------------------------", Fore.LIGHTBLACK_EX)}
                    """)
+        loading.succeed("Retrieval successful")
+        # Dcitionary for CSV output
+        dictionary = {
+            "serial": component['serialNumber'],
+            "type": component['type']['code'],
+            "reception_vi": len(module_reception) if component['type']['code'] == "OUTER_SYSTEM_QUAD_MODULE" else len(component_reception),
+            "wire_vi": "N/A" if component['type']['code'] != "OUTER_SYSTEM_QUAD_MODULE" else len(module_wire),
+            "masking_vi": "N/A" if component['type']['code'] != "OUTER_SYSTEM_QUAD_MODULE" else len(module_masking),
+            "unmasking_vi": "N/A" if component['type']['code'] != "OUTER_SYSTEM_QUAD_MODULE" else len(module_unmasking)
+        }
+        return dictionary
     # Run the function 
     while True:
         print(f"""
@@ -145,7 +166,7 @@ def eos_imager(client, colour):
                 print(f"{colour("••• ERROR: Invalid serial number, please try again •••", Fore.LIGHTRED_EX)}")
                 continue
             try:
-                retrieve_image_info(serial_n)
+                output = retrieve_image_info(serial_n)
             except Exception as e:
                 print(e)
                 print(f"Could not check component {serial_n}, please check it in the database") 
@@ -159,21 +180,53 @@ def eos_imager(client, colour):
                 print(f"{colour("••• ERROR: File name must end with .csv, please try again •••", Fore.LIGHTRED_EX)}")
                 continue
 
+            output_data = []
             with open(file_name, "r") as file:
                 reader = csv.reader(file)
                 for row in reader:
                    try:
-                    retrieve_image_info(row[0])
+                    output = retrieve_image_info(row[0])
+                    output_data.append(output)
                    except Exception as e:
                      print(e)
                      print(f"Could not check component {row[0]}, please check it in the database first")
                      continue
-
+                   
         else:
             print(f"{colour("••• ERROR: Invalid chosen option, please try again •••", Fore.LIGHTRED_EX)}")
             continue
 
-        choice = input("Try another one? (Y/N): ").strip().upper()
-        if choice != "Y":
-            os.system('cls' if os.name == 'nt' else 'clear')
-            break
+        file_prompt = input(f"{colour("(Optional) ••• Would you like to output the information to .CSV file? (Y/N): ", Fore.LIGHTYELLOW_EX)}").strip().upper()
+        if file_prompt == "Y":
+            print(f"{colour(">>> Processing outputs", Fore.YELLOW)}")
+            output_file = "component_image_status.csv"
+            with open(output_file, 'w', newline="") as file:
+                headers = ["SERIAL NUMBER", "TYPE", "RECEPTION VI", 'WIRE VI', "MASKING VI", "UNMASKING VI"]
+                writer = csv.writer(file)
+                writer.writerow(headers)
+                for element in output_data:
+                    row = [
+                        element['serial'],
+                        element['type'],
+                        element['reception_vi'],
+                        element['wire_vi'],
+                        element['masking_vi'],
+                        element['unmasking_vi']
+                    ]
+                    writer.writerow(row)
+            open_file = input(f"{colour("••• FINISHED: Open the file? (Y/N): ", Fore.LIGHTGREEN_EX)}").strip().upper()
+            if open_file == "Y":
+                system = platform.system()
+                if system == "Windows":
+                    os.startfile(output_file)
+                else:
+                    subprocess.run(["open", output_file])
+                choice = input("Try another one? (Y/N): ").strip().upper()
+                if choice != "Y":
+                    os.system('cls' if os.name == 'nt' else 'clear')
+                    break
+        else:
+            choice = input("Try another one? (Y/N): ").strip().upper()
+            if choice != "Y":
+                os.system('cls' if os.name == 'nt' else 'clear')
+                break
