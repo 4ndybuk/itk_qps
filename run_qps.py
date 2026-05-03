@@ -35,7 +35,7 @@ def welcome():
     # Welcome Page
     print(f"""
             ╭──────────────────────────────────────────────────────────────╮
-            │  💠💠💠💠 {colour("Welcome to ITk Quick Production Services", Fore.CYAN):<10} 💠💠💠💠  │
+            │      ◈◈◈◈ {colour("Welcome to ITk Quick Production Services", Fore.CYAN):<25} ◈◈◈◈      │
             │                                                              │
             │ {colour("Choose your service:", Fore.CYAN):<60}          │
             │                                                              │
