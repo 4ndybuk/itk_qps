@@ -10,8 +10,9 @@ from scripts.mass_upload import mass_upload
 from scripts.filter_jigs import filter_jigs
 from scripts.visual_inspections import visual_inspections
 from scripts.eos_imager import eos_imager
+from scripts.stage_coherency import stage_coherency
 
-DEBUG = False
+DEBUG = True
 
 def colour(text, c):
     # Text colouring function
@@ -21,6 +22,9 @@ if DEBUG == False:
     print(f"{colour("••• ATLAS ITk PRODUCTION DATABASE LOGIN •••", Fore.LIGHTBLUE_EX)}")
     code1 = getpass.getpass("Enter passcode 1: ")
     code2 = getpass.getpass("Enter passcode 2: ")
+else:
+    code1 = "__bodega1"
+    code2 = "__hardconnecT"
 
 try:
     u = itkdb.core.User(access_code1=code1, access_code2=code2)
@@ -45,6 +49,7 @@ def welcome():
             │ •D → Search pixel module components by tool IDs              │
             │ •E → Upload component VI in a batch (.csv required)          │
             │ •F → Search component stored images status                   │
+            │ •G → Stage coherency (Only for bare modules)                 │  
             │                                                              │
             │ {colour("exit", Fore.LIGHTRED_EX)} → Quit the program{"":<34}    │
             │                                                              │
@@ -72,7 +77,11 @@ def main():
                 visual_inspections(client, colour)
             case "F":
                 eos_imager(client, colour)
+            case "G":
+                stage_coherency(client, colour)
             case "exit":
+                break
+            case "EXIT":
                 break
 
 if __name__ == "__main__":
