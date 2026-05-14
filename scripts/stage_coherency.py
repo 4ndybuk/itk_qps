@@ -1,6 +1,7 @@
 import os
 from colorama import Fore
 from collections import Counter
+import json
 
 def stage_coherency(client, colour):
     serial_n = input("Serial number: ")
@@ -36,15 +37,31 @@ def stage_coherency(client, colour):
             if y != new_stage:
                 choice = input(f"{colour("Would you like to force stage coherency? (Y/N): ",Fore.LIGHTBLUE_EX)}").strip().upper()
                 if choice == "Y":
-                    try:
-                        stage_change = client.post("setComponentStage",
-                                                json={
-                                                    "component": str(x),
-                                                    "stage": str(new_stage)
-                                                })
-                        print(colour(f"••• Stage change for {x} succesfully changed to {new_stage}",Fore.LIGHTCYAN_EX))
-                    except Exception as e:
-                        print(e)
+                    if "20UPGS" in x:
+                        ordered_stages = ["sensor_manufacturer",
+                                          "WAFER_PROCESSING",
+                                          "BAREMODULEASSEMBLY",
+                                          "BAREMODULERECEPTION",
+                                          "MODULE/ASSEMBLY",
+                                          "MODULE/WIREBONDING"]
+                    elif "20UPGF" in x:
+                        ordered_stages = ["TESTONWAFER",
+                                          "BAREMODULERECEPTION",
+                                          "MODULE/ASSEMBLY",
+                                          "MODULE/WIREBONDING"]
+                        
+                    current_index = ordered_stages.index(y)
+                    target_index = ordered_stages.index(str(new_stage))
+                    for stage in ordered_stages[current_index + 1 : target_index + 1]:
+                        try:
+                            stage_change = client.post("setComponentStage",
+                                                    json={
+                                                        "component": str(x),
+                                                        "stage": stage
+                                                    })
+                            print(colour(f"••• Stage change for {x} succesfully advanced to {stage}",Fore.LIGHTGREEN_EX))
+                        except Exception as e:
+                            print(e)
 
         input(f"{colour("••• PRESS ENTER TO RETURN TO MAIN MENU •••",Fore.YELLOW)}")
         os.system("clear") 
