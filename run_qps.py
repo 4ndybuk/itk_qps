@@ -12,7 +12,7 @@ from scripts.visual_inspections import visual_inspections
 from scripts.eos_imager import eos_imager
 from scripts.stage_coherency import stage_coherency
 
-DEBUG = True
+DEBUG = False
 
 def colour(text, c):
     # Text colouring function
@@ -22,9 +22,6 @@ if DEBUG == False:
     print(f"{colour("••• ATLAS ITk PRODUCTION DATABASE LOGIN •••", Fore.LIGHTBLUE_EX)}")
     code1 = getpass.getpass("Enter passcode 1: ")
     code2 = getpass.getpass("Enter passcode 2: ")
-else:
-    code1 = "__bodega1"
-    code2 = "__hardconnecT"
 
 try:
     u = itkdb.core.User(access_code1=code1, access_code2=code2)
