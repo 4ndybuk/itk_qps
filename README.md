@@ -26,7 +26,7 @@ Multi-functional CLI tool to optimise ATLAS ITk Pixel assemlby workflow. Include
 
 ## Usage
 1. Use your ITk Prodcution Database login credentials to access the menu
-2. Choose the service from the list of options (A -> F)
+2. Choose the service from the list of options (A -> G)
 3. Retrieve(Push) information from(to) the database either by a single input or pre-filled .csv file
 
 ## License
