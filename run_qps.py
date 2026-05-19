@@ -27,6 +27,8 @@ try:
     u = itkdb.core.User(access_code1=code1, access_code2=code2)
     client = itkdb.Client(user=u)
     client.user.authenticate()
+    user = client.get('getUser', json={'userIdentity': client.user.identity})
+    operator = f"{user['firstName']} {user['lastName']}"
     os.system('csl' if os.name == 'nt' else 'clear')
 except Exception as e:
     print(e)
@@ -34,7 +36,15 @@ except Exception as e:
 
 def welcome():
     # Welcome Page
+    content = f"••• CURRENT USER: {operator}"
+    width = 42
+    padded = content.ljust(width)
+
     print(f"""
+          
+            ╔{"═" * (width + 2)}╗
+            ║ {colour(padded, Fore.LIGHTGREEN_EX)} ║
+            ╚{"═" * (width + 2)}╝
             ╭──────────────────────────────────────────────────────────────╮
             │      ◈◈◈◈ {colour("Welcome to ITk Quick Production Services", Fore.CYAN):<25} ◈◈◈◈      │
             │                                                              │

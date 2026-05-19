@@ -6,7 +6,23 @@ from datetime import datetime, timezone
 
 def mass_upload(client, colour):
     print(f"{colour("(Optional) back --> return to home menu", Fore.YELLOW)}")
+    print(f"{colour("(Optional) show --> show example .csv file", Fore.LIGHTBLUE_EX)}")
     file_path = input("CSV directory: ")
+    
+    if file_path == "show":
+        print(f"""
+                    .CSV file for mass upload
+        ╔═════════════════════════════════════════════════════════════╗
+        ║                                                             ║
+        ║                     20UPGBXXXXXXXX,1242.2 <-- MASS IN MG    ║
+        ║   SERIAL NUMBER --> 20UPGBXXXXXXXX,3253.2                   ║
+        ║                     20UPGBXXXXXXXX,1834.3                   ║
+        ║                     ...,...                                 ║
+        ╚═════════════════════════════════════════════════════════════╝
+              
+        {colour("* Only one type of component per .csv file, do not mix types!", Fore.LIGHTRED_EX)}
+            """)
+        file_path = input("CSV directory: ")
 
     if file_path == "back":
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -22,7 +38,7 @@ def mass_upload(client, colour):
         print(f"{colour("••• ERROR: File name must end with .csv, try again •••", Fore.LIGHTRED_EX)}")
         return
 
-    component_type = input("\nComponent type:\n\tA --> PCB Flex\n\tB --> Bare Module\n\tC --> Assembled Module\n\tD --> Back to Menu\n\t\n\tChoice: ").strip().upper()
+    component_type = input(f"\nComponent type:\n\tA --> PCB Flex\n\tB --> Bare Module\n\tC --> Assembled Module\n\tD --> Back to Menu\n\t\n\tChoice: ").strip().upper()
     print("")
 
     if component_type == "back":

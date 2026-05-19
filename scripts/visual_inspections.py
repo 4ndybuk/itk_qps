@@ -3,19 +3,41 @@ from colorama import Fore
 import csv
 from halo import Halo
 from datetime import datetime, timezone
+from scripts.optional_prompts import defects_list, example_csv
 
 def visual_inspections(client, colour):
-    print(f"{colour("(Optional) back --> return to home menu", Fore.YELLOW)}")
-    file_path = input("CSV directory: ")
+    # Retrieve logged user's name
+    user = client.get('getUser', json={'userIdentity': client.user.identity})
+    operator = f"{user['firstName']} {user['lastName']}"
 
-    if file_path == "back":
-        os.system('cls' if os.name == 'nt' else 'clear')
-        return
+    
+    while True:
+        print(f"{colour("(Optional) back --> return to home menu", Fore.YELLOW)}")
+        print(f"{colour("(Optional) show --> show example .csv file", Fore.LIGHTBLUE_EX)}")
+        print(f"{colour("(Optional) defects --> show list of defects for VI upload", Fore.LIGHTBLUE_EX)}")
+        file_path = input("CSV directory: ")
 
-    if file_path == "":
-        os.system('cls' if os.name == 'nt' else 'clear')
-        print(f"{colour("••• ERROR: Empty CSV directory, try again •••", Fore.LIGHTRED_EX)}")
-        return
+        if file_path == "defects":
+            os.system("cls" if os.name == 'nt' else "clear")
+            defects = defects_list(colour)
+            continue
+
+        if file_path == "show":
+            os.system("cls" if os.name == 'nt' else "clear")
+            examples = example_csv(colour)
+            continue
+
+        if file_path == "back":
+            os.system('cls' if os.name == 'nt' else 'clear')
+            return
+
+        if file_path == "":
+            os.system('cls' if os.name == 'nt' else 'clear')
+            print(f"{colour("••• ERROR: Empty CSV directory, try again •••", Fore.LIGHTRED_EX)}")
+            return
+        
+        if ".csv" in file_path:
+            break
     
     component_type = input("\nComponent type: \n\tA--> Bare Module\n\tB--> PCB Flex\n\tC --> Back to Menu\n\n\tChoice: ").strip().upper()
 
@@ -36,6 +58,17 @@ def visual_inspections(client, colour):
                 now_utc = datetime.now(timezone.utc)
                 iso_time = now_utc.isoformat(timespec='milliseconds').replace('+00:00', 'Z')
                 component = client.get('getComponent',json={"component": row[0],"alternativeIdentifier": False})
+
+                # Pass/Fail criteria
+                if row[1] == "Pass":
+                    row[1] = True
+                elif row[1] == "Fail":
+                    row[1] = False
+                else:
+                    os.system("cls" if os.name == 'nt' else "clear")
+                    print(colour("••• ERROR: Incorrect Pass/Fail input in the .CSV file, please check!"))
+                    return
+
                 if component_type == "A":
                     if component['componentType']['code'] != "BARE_MODULE":
                         print("The component do not correspond to bare module, please try again.")
@@ -60,7 +93,7 @@ def visual_inspections(client, colour):
                           "institution": "LIV",
                           "runNumber": "1",
                           "date": iso_time,
-                          "passed": True,
+                          "passed": row[1],
                           "problems": False,
                           "properties": {
                             "ANALYSIS_VERSION": None,
@@ -104,28 +137,28 @@ def visual_inspections(client, colour):
                       "institution": "LIV",
                       "runNumber": "1",
                       "date": iso_time,
-                      "passed": True,
+                      "passed": row[1],
                       "problems": False,
                       "properties": {
-                        "OPERATOR": "Andy Bukowski",
+                        "OPERATOR": operator,
                         "INSTRUMENT": "Epson V850",
                         "ANALYSIS_VERSION": None
                       },
                       "results": {
-                        "WIREBOND_PADS_CONTAMINATION_GRADE": row[1],
-                        "PARTICULATE_CONTAMINATION_GRADE": row[2],
-                        "WATERMARKS_GRADE": row[3],
-                        "SCRATCHES_GRADE": row[4],
-                        "TRACES_GRADE": row[5],
-                        "SOLDERMASK_IRREGULARITIES_GRADE": row[6],
-                        "HV_LV_CONNECTOR_ASSEMBLY_GRADE": row[7],
-                        "DATA_CONNECTOR_ASSEMBLY_GRADE": row[8],
-                        "SOLDER_SPILLS_GRADE": row[9],
-                        "COMPONENT_MISALIGNMENT_GRADE": row[10],
-                        "SHORTS_OR_CLOSE_PROXIMITY_GRADE": row[11],
-                        "OPENS_TOMBSTONING_GRADE": row[12],
-                        "OVERALL_GRADE": row[13],
-                        "OBSERVATION": row[14]
+                        "WIREBOND_PADS_CONTAMINATION_GRADE": row[2],
+                        "PARTICULATE_CONTAMINATION_GRADE": row[3],
+                        "WATERMARKS_GRADE": row[4],
+                        "SCRATCHES_GRADE": row[5],
+                        "TRACES_GRADE": row[6],
+                        "SOLDERMASK_IRREGULARITIES_GRADE": row[7],
+                        "HV_LV_CONNECTOR_ASSEMBLY_GRADE": row[8],
+                        "DATA_CONNECTOR_ASSEMBLY_GRADE": row[9],
+                        "SOLDER_SPILLS_GRADE": row[10],
+                        "COMPONENT_MISALIGNMENT_GRADE": row[11],
+                        "SHORTS_OR_CLOSE_PROXIMITY_GRADE": row[12],
+                        "OPENS_TOMBSTONING_GRADE": row[13],
+                        "OVERALL_GRADE": row[14],
+                        "OBSERVATION": row[15]
                       }
                     }
                     test_upload = client.post('uploadTestRunResults', json=test_json)
