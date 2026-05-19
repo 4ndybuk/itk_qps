@@ -19,20 +19,24 @@ def colour(text, c):
     return f"{c}{text}{Style.RESET_ALL}"
 
 if DEBUG == False:
-    print(f"{colour("••• ATLAS ITk PRODUCTION DATABASE LOGIN •••", Fore.LIGHTBLUE_EX)}")
-    code1 = getpass.getpass("Enter passcode 1: ")
-    code2 = getpass.getpass("Enter passcode 2: ")
-
-try:
-    u = itkdb.core.User(access_code1=code1, access_code2=code2)
-    client = itkdb.Client(user=u)
-    client.user.authenticate()
-    user = client.get('getUser', json={'userIdentity': client.user.identity})
-    operator = f"{user['firstName']} {user['lastName']}"
-    os.system('csl' if os.name == 'nt' else 'clear')
-except Exception as e:
-    print(e)
-    exit()
+    while True:
+        print(f"{colour("••• ATLAS ITk PRODUCTION DATABASE LOGIN •••", Fore.LIGHTBLUE_EX)}")
+        try:
+            code1 = getpass.getpass("Enter passcode 1: ")
+            code2 = getpass.getpass("Enter passcode 2: ")
+            u = itkdb.core.User(access_code1=code1, access_code2=code2)
+            client = itkdb.Client(user=u)
+            client.user.authenticate()
+            user = client.get('getUser', json={'userIdentity': client.user.identity})
+            operator = f"{user['firstName']} {user['lastName']}"
+            os.system('cls' if os.name == 'nt' else 'clear')
+            break
+        except KeyboardInterrupt:
+            print(f"{colour("••• Quitting the program •••", Fore.RED)}")
+            exit()
+        except Exception:
+            print(f"{colour("••• ERROR: Invalid login credentials, please try again •••", Fore.RED)}")
+            continue
 
 def welcome():
     # Welcome Page
