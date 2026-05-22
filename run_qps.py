@@ -94,6 +94,9 @@ def main():
                 break
             case "EXIT":
                 break
+            case "":
+                os.system("clear")
+                continue
 
 if __name__ == "__main__":
     main()
