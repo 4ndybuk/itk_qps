@@ -1,9 +1,9 @@
 import os
 from colorama import Fore
-import csv
-from halo import Halo
-from datetime import datetime, timezone
 from scripts.optional_prompts import defects_list, example_csv
+from datetime import datetime, timezone
+from halo import Halo
+import csv
 
 def visual_inspections(client, colour):
     # Retrieve logged user's name
@@ -39,9 +39,9 @@ def visual_inspections(client, colour):
         if ".csv" in file_path:
             break
     
-    component_type = input("\nComponent type: \n\tA--> Bare Module\n\tB--> PCB Flex\n\tC --> Back to Menu\n\n\tChoice: ").strip().upper()
+    component_type = input("\nComponent type: \n\tA--> Bare Module\n\tB--> PCB Flex\n\tback --> Back to Menu\n\n\tChoice: ").strip().upper()
 
-    if component_type == "C":
+    if component_type == "BACK":
         os.system('cls' if os.name == 'nt' else 'clear')
         return
 
@@ -86,6 +86,11 @@ def visual_inspections(client, colour):
                         spinner.succeed(f"Stage for {row[0]} changed succesfully!")
                     else:
                         print("Correct stage for VI upload")
+                    # Verify input values
+                    if int(row[1]) not in [1,2,3] or int(row[2]) not in [1,2,3]:
+                        print(colour("Incorrect input type (integers between 1 and 3 only), skipping...", Fore.RED))
+                        skipped_list.append(row[0])
+                        continue
                     # Now to upload the VI test run
                     test_json = {
                           "component": row[0],
@@ -130,6 +135,11 @@ def visual_inspections(client, colour):
                         spinner.succeed(f"Stage for {row[0]} changed succesfully!")
                     else:
                         print("Correct stage for VI upload")
+                    
+                    if not all(int(x) in [1, 2, 3] for x in row[2:14]):
+                        print(colour("Incorrect input type (integers between 1 and 3 only), skipping...", Fore.RED))
+                        skipped_list.append(row[0])
+                        continue
 
                     test_json = {
                       "component": row[0],
@@ -165,6 +175,7 @@ def visual_inspections(client, colour):
                     print(f"Visual inspection for {row[0]} has been succesfully uploaded")
             except Exception as e:
                 print(e)
+    print(colour(f"Skipped components\n\t{skipped_list}", Fore.RED))
     finished = input(f"{colour("PRESS ENTER TO RETURN TO MENU", Fore.YELLOW)}")
     if finished == "":
         os.system('cls' if os.name == 'nt' else 'clear')

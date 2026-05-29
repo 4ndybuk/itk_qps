@@ -3,6 +3,7 @@ from colorama import Fore
 import csv
 from halo import Halo
 from datetime import datetime, timezone
+from time import sleep
 
 def mass_upload(client, colour):
     print(f"{colour("(Optional) back --> return to home menu", Fore.YELLOW)}")
@@ -38,7 +39,7 @@ def mass_upload(client, colour):
         print(f"{colour("••• ERROR: File name must end with .csv, try again •••", Fore.LIGHTRED_EX)}")
         return
 
-    component_type = input(f"\nComponent type:\n\tA --> PCB Flex\n\tB --> Bare Module\n\tC --> Assembled Module\n\tD --> Back to Menu\n\t\n\tChoice: ").strip().upper()
+    component_type = input(f"\nComponent type:\n\tA --> PCB Flex\n\tB --> Bare Module\n\tC --> Assembled Module\n\tback --> Back to Menu\n\t\n\tChoice: ").strip().upper()
     print("")
 
     if component_type == "back":
@@ -51,16 +52,36 @@ def mass_upload(client, colour):
         return
     
     failed_list = []
-    spinner = Halo(text="••• Pushing test runs to the database •••", spinner='earth')
-    spinner.start()
+    if os.name == 'nt':
+        print(colour("••• Pushing test runs to the database •••", Fore.GREEN))
+    else:
+        spinner = Halo(text="••• Pushing test runs to the database •••", spinner='earth')
+        spinner.start()
     with open(file_path, "r", newline="") as file:
         reader = csv.reader(file)
         for row in reader:
-            # print(row)
+            # Verify component stage and type
+            component = client.get('getComponent',json={
+                "component": row[0]
+            })
+            stage = component['currentStage']['code']
+            com_type = component['componentType']['code']
             try:
                 now_utc = datetime.now(timezone.utc)
                 iso_time = now_utc.isoformat(timespec='milliseconds').replace('+00:00', 'Z')
                 if component_type == "A":
+                    if com_type != "PCB":
+                        print(colour(f"Component {row[0]} is not a PCB Flex type, skipping...", Fore.RED))
+                        failed_list.append(row[0])
+                        continue
+                    elif stage != "PCB_RECEPTION_MODULE_SITE":
+                        print(colour(f"Component {row[0]} is not at a correct stage for upload, updating current stage...\n", Fore.YELLOW))
+                        set_stage = client.post('setComponentStage',json={
+                            "component": row[0],
+                            "stage": "PCB_RECEPTION_MODULE_SITE"
+                        })
+                        sleep(2)
+
                     test_json = {
                         "component": row[0],
                         "testType": "MASS",
@@ -79,6 +100,18 @@ def mass_upload(client, colour):
                         }
                         }
                 elif component_type == "B":
+                    if com_type != "BARE_MODULE":
+                        print(colour(f"Component {row[0]} is not a bare module type, skipping...", Fore.RED))
+                        failed_list.append(row[0])
+                        continue
+                    elif stage != "BAREMODULERECEPTION":
+                        print(colour(f"Component {row[0]} is not at a correct stage for upload, updating current stage...\n", Fore.YELLOW))
+                        set_stage = client.post('setComponentStage',json={
+                            "component": row[0],
+                            "stage": "BAREMODULERECEPTION"
+                        })
+                        sleep(2)
+
                     test_json = {
                         "component": row[0],
                         "testType": "MASS_MEASUREMENT",
@@ -98,6 +131,18 @@ def mass_upload(client, colour):
                         }
                         }
                 elif component_type == "C":
+                    if com_type != "MODULE":
+                        print(colour(f"Component {row[0]} is not a assembled module type, skipping...", Fore.RED))
+                        failed_list.append(row[0])
+                        continue
+                    elif stage != "MODULE/ASSEMBLY":
+                        print(colour(f"Component {row[0]} is not at a correct stage for upload, updating current stage...\n", Fore.YELLOW))
+                        set_stage = client.post('setComponentStage',json={
+                            "component": row[0],
+                            "stage": "MODULE/ASSEMBLY"
+                        })
+                        sleep(2)
+                        
                     test_json = {
                       "component": row[0],
                       "testType": "MASS_MEASUREMENT",
@@ -117,6 +162,7 @@ def mass_upload(client, colour):
                       }
                     }
                 else:
+                    spinner.stop()
                     return
                 test_upload = client.post('uploadTestRunResults',json=test_json)
             except Exception as e:
