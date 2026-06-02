@@ -2,6 +2,6 @@ scripts/automated_iref_pdb.py
 scripts/set_iref_trim_pdb.py
 scripts/__pycache__
 scripts/.webcache
-component_image_status.csv
-vi.csv
-ids.csv
+/component_image_status.csv
+/vi.csv
+/ids.csv
