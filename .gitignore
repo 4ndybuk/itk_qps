@@ -1,2 +1,4 @@
 scripts/automated_iref_pdb.py
 scripts/set_iref_trim_pdb.py
+scripts/__pycache__
+scripts/.webcache

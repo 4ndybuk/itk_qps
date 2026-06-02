@@ -4,12 +4,27 @@ from collections import Counter
 import json
 
 def stage_coherency(client, colour):
+    def stage_change(component, stage):
+        try:
+            stage_change = client.post("setComponentStage",
+                                    json={
+                                        "component": component,
+                                        "stage": stage
+                                    })
+            print(colour(f"••• Stage change for {component} succesfully advanced to {stage}",Fore.LIGHTGREEN_EX))
+        except Exception as e:
+            print(e)
+
     while True:
+        print(colour("(Optional) back --> Return to main menu", Fore.YELLOW))
         serial_n = input("Serial number: ")
         if serial_n == "":
             print(colour("••• Empty serial number input, try again •••",Fore.RED))
         elif len(serial_n) > 14:
             print(colour("••• Invalid serial number, try again •••",Fore.RED))
+        elif serial_n == "back":
+            os.system('clear')
+            return
 
         try:
             response = client.get(
@@ -33,11 +48,14 @@ def stage_coherency(client, colour):
             {"\n\t    ".join(combiner)}
                 """)
             
-            for x,y in combined_list:
-                new_stage = next(iter(repeated_ys))
-                if y != new_stage:
-                    choice = input(f"{colour("Would you like to force stage coherency? (Y/N): ",Fore.LIGHTBLUE_EX)}").strip().upper()
-                    if choice == "Y":
+            choice = input(f"{colour("Would you like to force stage coherency? (Y/N): ",Fore.LIGHTBLUE_EX)}").strip().upper()
+            if choice == "Y":
+                new_stage = "BAREMODULERECEPTION"
+                if all(y == new_stage for x,y in combined_list):
+                    print(colour("All components are at the right stage!", Fore.GREEN))
+                    continue
+                for x,y in combined_list:
+                    if y != new_stage:
                         if "20UPGS" in x:
                             ordered_stages = ["sensor_manufacturer",
                                             "WAFER_PROCESSING",
@@ -47,22 +65,22 @@ def stage_coherency(client, colour):
                                             "MODULE/WIREBONDING"]
                         elif "20UPGF" in x:
                             ordered_stages = ["TESTONWAFER",
+                                            "BAREMODULEASSEMBLY",
                                             "BAREMODULERECEPTION",
                                             "MODULE/ASSEMBLY",
                                             "MODULE/WIREBONDING"]
                             
                         current_index = ordered_stages.index(y)
-                        target_index = ordered_stages.index(str(new_stage))
-                        for stage in ordered_stages[current_index + 1 : target_index + 1]:
-                            try:
-                                stage_change = client.post("setComponentStage",
-                                                        json={
-                                                            "component": str(x),
-                                                            "stage": stage
-                                                        })
-                                print(colour(f"••• Stage change for {x} succesfully advanced to {stage}",Fore.LIGHTGREEN_EX))
-                            except Exception as e:
-                                print(e)
+                        target_index = ordered_stages.index(new_stage)
+                        if current_index > target_index:
+                            stage_change(str(x), new_stage)
+                        else:
+                            for stage in ordered_stages[current_index + 1 : target_index + 1]:
+                                stage_change(str(x), stage)
+            else:
+                input(f"{colour("••• PRESS ENTER TO RETURN TO MAIN MENU •••",Fore.YELLOW)}")
+                os.system("clear")
+                break
 
             yes_no = input(f"{colour("••• Would you like to stage check another component? (Y/N): ",Fore.YELLOW)}").strip().upper()
             if yes_no == "Y":

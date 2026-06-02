@@ -199,7 +199,7 @@ def eos_imager(client, colour):
         file_prompt = input(f"{colour("(Optional) ••• Would you like to output the information to .CSV file? (Y/N): ", Fore.LIGHTYELLOW_EX)}").strip().upper()
         if file_prompt == "Y":
             print(f"{colour(">>> Processing outputs", Fore.YELLOW)}")
-            output_file = "component_image_status.csv"
+            output_file = "components_image_status.csv"
             with open(output_file, 'w', newline="") as file:
                 headers = ["SERIAL NUMBER", "TYPE", "RECEPTION VI", 'WIRE VI', "MASKING VI", "UNMASKING VI"]
                 writer = csv.writer(file)
