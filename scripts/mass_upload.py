@@ -39,11 +39,17 @@ def mass_upload(client, colour):
         print(f"{colour("••• ERROR: File name must end with .csv, try again •••", Fore.LIGHTRED_EX)}")
         return
 
-    component_type = input(f"\nComponent type:\n\tA --> PCB Flex\n\tB --> Bare Module\n\tC --> Assembled Module\n\tback --> Back to Menu\n\t\n\tChoice: ").strip().upper()
-    print("")
+    component_type = input(f"""
+        Component type:
+        {colour("A --> PCB Flex", Fore.CYAN)}
+        {colour("B --> Bare Module", Fore.LIGHTGREEN_EX)}
+        {colour("C --> Assembled Module", Fore.LIGHTCYAN_EX)}
+        {colour("back --> Back to Menu", Fore.YELLOW)}
+        
+        Choice: """).strip().upper()
 
-    if component_type == "back":
-        os.system('cls' if os.name == 'nt' else 'clear')
+    if component_type == "BACK":
+        os.system('clear')
         return
 
     if component_type == "":

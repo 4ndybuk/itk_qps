@@ -1,7 +1,6 @@
 import os
 from colorama import Fore
 from collections import Counter
-import json
 
 def stage_coherency(client, colour):
     def stage_change(component, stage):
