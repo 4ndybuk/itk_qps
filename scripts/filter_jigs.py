@@ -20,8 +20,11 @@ def filter_jigs(client, colour):
         print(f"{colour("••• ERROR: Empty CSV directory, try again •••", Fore.LIGHTRED_EX)}")
         return
 
-    spinner = Halo(text="Retrieving component assembly data", spinner='earth')
-    spinner.start()
+    if os.name == 'nt':
+        print(colour("Retrieving component assembly data", Fore.GREEN))
+    else:
+        spinner = Halo(text="Retrieving component assembly data", spinner='earth')
+        spinner.start()
     tool_list = []
     with open(file_path, "r", newline="") as file:
         reader = csv.reader(file)
@@ -45,8 +48,9 @@ def filter_jigs(client, colour):
             except Exception as e:
                 print(e)
                 return
-            
-    spinner.succeed("Done!")
+
+    if os.name != "nt":   
+        spinner.succeed("Done!")
     print("\nTool ID extraction completed, please choose your filter by ID number (none --> list all)")
     while True:
         filter_id = input("Tool ID: ")

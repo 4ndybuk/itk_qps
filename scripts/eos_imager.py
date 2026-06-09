@@ -28,8 +28,11 @@ def eos_imager(client, colour):
                 return []
 
     def retrieve_image_info(response):
-        loading = Halo(text="••• Searching the component, please wait •••", spinner='earth')
-        loading.start()
+        if os.name != "nt":
+            loading = Halo(text="••• Searching the component, please wait •••", spinner='earth')
+            loading.start()
+        else:
+            print(colour("••• Searching the component, please wait •••", Fore.GREEN))
 
         def pull_data(boole):
             # Component pull from production database
@@ -45,7 +48,8 @@ def eos_imager(client, colour):
         except Exception as e:
             print(f"\n\t{colour("••• ERROR: Component retrieval error, displaying: •••", Fore.RED)}")
             print(f"\n{e}")
-            loading.stop()
+            if os.name != "nt":
+                loading.stop()
 
         def get_stage(serial):
             # Retrieve component current stage
@@ -126,7 +130,10 @@ def eos_imager(client, colour):
 
             {colour("---------------------------------------------------------", Fore.LIGHTBLACK_EX)}
                    """)
-        loading.succeed("Retrieval successful")
+        if os.name != "nt":
+            loading.succeed("Retrieval successful")
+        else:
+            print(colour("Retrieval successful", Fore.GREEN))
         # Dcitionary for CSV output
         dictionary = {
             "serial": component['serialNumber'],

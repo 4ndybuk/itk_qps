@@ -10,11 +10,12 @@ def visual_inspections(client, colour):
     user = client.get('getUser', json={'userIdentity': client.user.identity})
     operator = f"{user['firstName']} {user['lastName']}"
 
-    
     while True:
-        print(f"{colour("(Optional) back --> return to home menu", Fore.YELLOW)}")
-        print(f"{colour("(Optional) show --> show example .csv file", Fore.LIGHTBLUE_EX)}")
-        print(f"{colour("(Optional) defects --> show list of defects for VI upload", Fore.LIGHTBLUE_EX)}")
+        print(f"""
+        {colour("(Optional) back --> return to home menu", Fore.YELLOW)}
+        {colour("(Optional) show --> show example .csv file", Fore.LIGHTBLUE_EX)}
+        {colour("(Optional) defects --> show list of defects for VI upload", Fore.LIGHTBLUE_EX)}
+        """)
         file_path = input("CSV directory: ")
 
         if file_path == "defects":
@@ -39,8 +40,14 @@ def visual_inspections(client, colour):
         if ".csv" in file_path:
             break
     
-    component_type = input("\nComponent type: \n\tA--> Bare Module\n\tB--> PCB Flex\n\tback --> Back to Menu\n\n\tChoice: ").strip().upper()
-
+    component_type = input(f"""
+        Component type:
+        {colour("A --> PCB Flex", Fore.CYAN)}
+        {colour("B --> Bare Module", Fore.LIGHTGREEN_EX)}
+        {colour("back --> Back to Menu", Fore.YELLOW)}
+        
+        Choice: """).strip().upper()
+    
     if component_type == "BACK":
         os.system('cls' if os.name == 'nt' else 'clear')
         return
@@ -69,7 +76,7 @@ def visual_inspections(client, colour):
                     print(colour("••• ERROR: Incorrect Pass/Fail input in the .CSV file, please check!"))
                     return
 
-                if component_type == "A":
+                if component_type == "B":
                     if component['componentType']['code'] != "BARE_MODULE":
                         print("The component do not correspond to bare module, please try again.")
                         break

@@ -49,7 +49,7 @@ def mass_upload(client, colour):
         Choice: """).strip().upper()
 
     if component_type == "BACK":
-        os.system('clear')
+        os.system('cls' if os.name == 'nt' else 'clear')
         return
 
     if component_type == "":
@@ -81,7 +81,7 @@ def mass_upload(client, colour):
                         failed_list.append(row[0])
                         continue
                     elif stage != "PCB_RECEPTION_MODULE_SITE":
-                        print(colour(f"Component {row[0]} is not at a correct stage for upload, updating current stage...\n", Fore.YELLOW))
+                        print(colour(f"\nComponent {row[0]} is not at a correct stage for upload, updating current stage...\n", Fore.YELLOW))
                         set_stage = client.post('setComponentStage',json={
                             "component": row[0],
                             "stage": "PCB_RECEPTION_MODULE_SITE"
@@ -168,7 +168,8 @@ def mass_upload(client, colour):
                       }
                     }
                 else:
-                    spinner.stop()
+                    if os.name != 'nt':
+                        spinner.stop()
                     return
                 test_upload = client.post('uploadTestRunResults',json=test_json)
             except Exception as e:
@@ -179,7 +180,8 @@ def mass_upload(client, colour):
             print("\n\nAll components masses succesfully uploaded")
         else:
             print("These components have failed the upload test", failed_list)
-    spinner.succeed("••• RETURN PROMPT •••")
+    if os.name != 'nt':
+        spinner.succeed("••• RETURN PROMPT •••")
     finished = input(f"{colour("PRESS ENTER TO RETURN TO MENU", Fore.YELLOW)}")
     if finished == "":
         os.system('cls' if os.name == 'nt' else 'clear')
