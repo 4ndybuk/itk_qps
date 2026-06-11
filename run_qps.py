@@ -79,20 +79,11 @@ def welcome():
         return choose_input.strip()
 
 def test(client):
+    # Hidden function to quickly retreive component data
     component = input("Component: ")
     try:
         response = client.get('getComponent', json={"component": component})
         print(json.dumps(response['stages'], indent=4))
-    except Exception as e:
-        print(e)
-
-def change(client):
-    component = input("Component: ")
-    try:
-        reponse = client.post('setComponentStage',
-                                json={"component": component,
-                                "stage": "BAREMODULERECEPTION"})
-        print("Successful")
     except Exception as e:
         print(e)
 
@@ -116,8 +107,6 @@ def main():
                 stage_coherency(client, colour)
             case "TEST":
                 test(client)
-            case "CHANGE":
-                change(client)
             case "exit":
                 break
             case "EXIT":
