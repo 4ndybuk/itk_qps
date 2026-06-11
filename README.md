@@ -1,5 +1,5 @@
 # ITk Quick Production Services (QPS)
-Multi-functional CLI tool to optimise ATLAS ITk Pixel assemlby workflow. Includes automation of database queries and fast batch uploads of test runs (e.g. from .csv files). Redcues manual effort to retrieve/push component(s) information from/to the production database. 
+Multi-functional CLI tool to optimise ATLAS ITk Pixel assemlby workflow. Includes automation of database queries and fast batch uploads of test runs (e.g. from .csv files). Reduces manual effort to retrieve/push component(s) information from/to the production database. 
 
 ## Details
 ![itkdb](https://img.shields.io/badge/itkdb-0.6.18-brightgreen)  
