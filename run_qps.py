@@ -2,6 +2,7 @@ import os
 import itkdb
 import getpass
 from colorama import Fore, Style
+import json
 
 # Import scripts
 from scripts.alternative_ids import alternative_ids
@@ -11,32 +12,37 @@ from scripts.filter_jigs import filter_jigs
 from scripts.visual_inspections import visual_inspections
 from scripts.eos_imager import eos_imager
 from scripts.stage_coherency import stage_coherency
+from dotenv import load_dotenv
+load_dotenv()
 
-DEBUG = False
+DEBUG = True
 
 def colour(text, c):
     # Text colouring function
     return f"{c}{text}{Style.RESET_ALL}"
 
-if DEBUG == False:
-    while True:
-        print(f"{colour("••• ATLAS ITk PRODUCTION DATABASE LOGIN •••", Fore.LIGHTBLUE_EX)}")
-        try:
+while True:
+    print(f"{colour("••• ATLAS ITk PRODUCTION DATABASE LOGIN •••", Fore.LIGHTBLUE_EX)}")
+    try:
+        if DEBUG == False:
             code1 = getpass.getpass("Enter passcode 1: ")
             code2 = getpass.getpass("Enter passcode 2: ")
-            u = itkdb.core.User(access_code1=code1, access_code2=code2)
-            client = itkdb.Client(user=u)
-            client.user.authenticate()
-            user = client.get('getUser', json={'userIdentity': client.user.identity})
-            operator = f"{user['firstName']} {user['lastName']}"
-            os.system('cls' if os.name == 'nt' else 'clear')
-            break
-        except KeyboardInterrupt:
-            print(f"{colour("••• Quitting the program •••", Fore.RED)}")
-            exit()
-        except Exception:
-            print(f"{colour("••• ERROR: Invalid login credentials, please try again •••", Fore.RED)}")
-            continue
+        else:
+            code1 = os.environ.get('CODE1')
+            code2 = os.environ.get('CODE2')
+        u = itkdb.core.User(access_code1=code1, access_code2=code2)
+        client = itkdb.Client(user=u)
+        client.user.authenticate()
+        user = client.get('getUser', json={'userIdentity': client.user.identity})
+        operator = f"{user['firstName']} {user['lastName']}"
+        os.system('cls' if os.name == 'nt' else 'clear')
+        break
+    except KeyboardInterrupt:
+        print(f"{colour("••• Quitting the program •••", Fore.RED)}")
+        exit()
+    except Exception:
+        print(f"{colour("••• ERROR: Invalid login credentials, please try again •••", Fore.RED)}")
+        continue
 
 def welcome():
     # Welcome Page
@@ -72,6 +78,24 @@ def welcome():
     else:
         return choose_input.strip()
 
+def test(client):
+    component = input("Component: ")
+    try:
+        response = client.get('getComponent', json={"component": component})
+        print(json.dumps(response['stages'], indent=4))
+    except Exception as e:
+        print(e)
+
+def change(client):
+    component = input("Component: ")
+    try:
+        reponse = client.post('setComponentStage',
+                                json={"component": component,
+                                "stage": "BAREMODULERECEPTION"})
+        print("Successful")
+    except Exception as e:
+        print(e)
+
 def main():
     while True:
         service_input = welcome()
@@ -90,6 +114,10 @@ def main():
                 eos_imager(client, colour)
             case "G":
                 stage_coherency(client, colour)
+            case "TEST":
+                test(client)
+            case "CHANGE":
+                change(client)
             case "exit":
                 break
             case "EXIT":

@@ -3,7 +3,7 @@ from colorama import Fore
 def defects_list(colour):
     defetcts = print(f"""
         
-        {colour("List of defects for bare module VI", Fore.LIGHTYELLOW_EX)}
+        {colour("List of defects for bare and assembled module VI", Fore.LIGHTYELLOW_EX)}
         
         0 - no defect
         1 - Sensor systematic rough edge or dicing effect
@@ -39,7 +39,7 @@ def example_csv(colour):
         ║     Row 1 -->  20UPGBXXXXXXXX,Pass,A,B,C                 ║
         ║                20UPGBXXXXXXXX,Fail,A,B,C  <-- Row 2      ║
         ║                20UPGBXXXXXXXX,Pass,A,B,C                 ║
-        ║                ...,...,...,...,...                       ║
+        ║                ...                                       ║
         ║                                                          ║
         ╚══════════════════════════════════════════════════════════╝
 
@@ -76,6 +76,71 @@ def example_csv(colour):
         ║                                                                      ║
         ╚══════════════════════════════════════════════════════════════════════╝
 
+                {colour("ASSEMBLED MODULES", Fore.LIGHTGREEN_EX)}
+        A - Defects - They go from 0 to 13 and they are often stacked together
+            e.g 0,1 and 8 would be 018
+        
+        Grading criteria: (1 -> Good, 2 -> Issues, 3 -> Bad)
+        B - SMD components condition
+        C - Sensor condition 
+        D - Front-end (FE) chips condition 
+        E - Glue distribution 
+        F - Observations (comment)
+
+        ╔══════════════════════════════════════════════════════════╗
+        ║                                                          ║
+        ║  Row 1 ->  20UPGMXXXXXXXX,Pass,A,B,C,D,E,F               ║
+        ║            20UPGMXXXXXXXX,Fail,A,B,C,D,E,F               ║
+        ║            20UPGMXXXXXXXX,Pass,A,B,C,D,E,F  <- Row 3     ║
+        ║            ...                                           ║
+        ║                                                          ║
+        ╚══════════════════════════════════════════════════════════╝
+
                """)
     
     return examples
+
+# Stage dictionaries
+assembled_list = [
+    "MODULE/INIT",
+    "MODULE/ASSEMBLY",
+    "MODULE/WIREBONDING",
+    "MODULE/INITIAL_WARM",
+    "MODULE/INITIAL_COLD",
+    "MODULE/PARYLENE_MASKING",
+    "MODULE/PARYLENE_COATING",
+    "MODULE/PARYLENE_UNMASKING",
+    "MODULE/POST_PARYLENE_WARM",
+    "MODULE/POST_PARYLENE_COLD"
+]
+
+bare_list = [
+    "BAREMODULEASSEMBLY",
+    "BAREMODULERECEPTION",
+    "MODULE/ASSEMBLY",
+    "MODULE/WIREBONDING",
+    "MODULE/INITIAL_WARM",
+    "MODULE/INITIAL_COLD",
+    "MODULE/PARYLENE_UNMASKING",
+    "MODULE/POST_PARYLENE_WARM",
+    "MODULE/POST_PARYLENE_COLD"
+]
+
+flex_list = [
+    "PCB_INIT",
+    "PCB_RECEPTION",
+    "PCB_BEING_POPULATED",
+    "PCB_POPULATION",
+    "PCB_QC",
+    "PCB_POPULATION",
+    "PCB_READY_FOR_MODULE",
+    "PCB_RECEPTION_MODULE_SITE",
+    "COMPLETE",
+    "MODULE/ASSEMBLY",
+    "MODULE/WIREBONDING",
+    "MODULE/INITIAL_WARM",
+    "MODULE/INITIAL_COLD",
+    "MODULE/PARYLENE_UNMASKING",
+    "MODULE/POST_PARYLENE_WARM",
+    "MODULE/POST_PARYLENE_COLD",
+]

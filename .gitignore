@@ -3,3 +3,4 @@ scripts/set_iref_trim_pdb.py
 scripts/__pycache__
 scripts/.webcache
 ./.webcache
+.env
