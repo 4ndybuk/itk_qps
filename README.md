@@ -26,7 +26,7 @@ Multi-functional CLI tool to optimise ATLAS ITk Pixel assemlby workflow. Include
 
 ## Usage
 1. Use your ITk Prodcution Database login credentials to access the menu
-2. Choose the service from the list of options (A -> G)
+2. Choose the service from the list of options (A -> H)
 	- Set alternative IDS for the components
 	- Fetch and output batch components
 	- Upload component masses in a batch
@@ -34,6 +34,7 @@ Multi-functional CLI tool to optimise ATLAS ITk Pixel assemlby workflow. Include
 	- Upload component visual inspections in a batch
 	- Search and output component image attachments
 	- Check and enforce component stage coherency
+	- Set strain relief presence on the assembled modules
 
 ## License
 1. This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.

@@ -12,6 +12,7 @@ from scripts.filter_jigs import filter_jigs
 from scripts.visual_inspections import visual_inspections
 from scripts.eos_imager import eos_imager
 from scripts.stage_coherency import stage_coherency
+from scripts.strain_reliefs import strain_reliefs
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -66,7 +67,8 @@ def welcome():
             │ •D → Search pixel module components by tool IDs              │
             │ •E → Upload component VI in a batch (.csv required)          │
             │ •F → Search component stored images status                   │
-            │ •G → Stage coherency (Only for bare modules)                 │  
+            │ •G → Stage coherency (Only for bare modules)                 │
+            │ •H → Set strain relief presence in modules (.csv required)   │   
             │                                                              │
             │ {colour("exit", Fore.LIGHTRED_EX)} → Quit the program{"":<34}    │
             │                                                              │
@@ -105,6 +107,8 @@ def main():
                 eos_imager(client, colour)
             case "G":
                 stage_coherency(client, colour)
+            case "H":
+                strain_reliefs(client, colour)
             case "TEST":
                 test(client)
             case "exit":
