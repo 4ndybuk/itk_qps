@@ -29,15 +29,20 @@ def strain_reliefs(client, colour):
         reader = csv.reader(file)
         for row in reader:
             # Check whether the serial number is correct
-            if "20UPGM" not in row and len(row) != 14:
-                print(colour(f"Incorrect serial number for {row}, skipping •••", Fore.RED))
+            if "20UPGM" not in str(row) and len(row) != 14:
+                print(colour(f"\nIncorrect serial number for {row}, skipping •••", Fore.RED))
                 failed_list.append(row)
             # Set relief to true for the modules
-            relief_response = client.post("setComponentProperty",json={
-                "component": "20UPGM24810187",
-                "code": "OEC_SR",
-                "value": True
-                })
+            try:
+                relief_response = client.post("setComponentProperty",json={
+                    "component": row[0],
+                    "code": "OEC_SR",
+                    "value": True
+                    })
+            except Exception:
+                print(colour(f"\nError setting property for {row}, skipping •••", Fore.RED))
+                failed_list.append(row)
+    print(colour(f"\nFailed modules:\n{failed_list}", Fore.RED))
     spinner.succeed("••• RETURN PROMPT •••")
     finished = input(f"{colour("PRESS ENTER TO RETURN TO MENU", Fore.YELLOW)}")
     if finished == "":
